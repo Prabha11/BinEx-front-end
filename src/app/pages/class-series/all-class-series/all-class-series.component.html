@@ -1,0 +1,196 @@
+<div class="row">
+  <div class="col-sm-6">
+    <nb-card size="large" [nbSpinner]="loadingAllSeries" nbSpinnerStatus="success" hidden>
+      <nb-card-header>Active Class Series</nb-card-header>
+      <nb-list>
+        <nb-list-item *ngFor="let classSeries of allClassSeries" class="small-padding">
+          <button nbButton status="info" ghost size="large" (click)="selectClassSeries(classSeries)">
+            {{classSeries?.description}}
+          </button>
+        </nb-list-item>
+      </nb-list>
+      <nb-card-footer>
+        <button nbButton hero class="float-right" status="success" size="small" (click)="newSeriesRequest()">
+          Add new series
+        </button>
+      </nb-card-footer>
+    </nb-card>
+    <nb-card>
+      <nb-card-body>
+        <button nbButton hero status="success" size="small" (click)="newSeriesRequest()">
+          Add new series
+        </button>
+      </nb-card-body>
+    </nb-card>
+    <nb-accordion>
+      <nb-accordion-item *ngFor="let classSeries of allClassSeries">
+        <nb-accordion-item-header>
+          {{classSeries?.description}}
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <p>Type : {{classSeries?.type}}</p>
+          <p>Location : {{classSeries?.location}}</p>
+          <p>Time : {{classSeries?.time}}</p>
+          <div class="form-inline">
+            <button nbButton hero size="small" status="success" class="right-gap"
+                    (click)="selectClassSeries(classSeries)">Select
+            </button>
+            <button nbButton hero size="small" status="danger" class="right-gap"
+                    (click)="deactivateClassSeriesRequest(classSeries)">Deactivate</button>
+            <button nbButton hero size="small" status="primary" class="right-gap">Edit</button>
+          </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    </nb-accordion>
+  </div>
+  <div class="col-sm-6">
+    <nb-card size="large">
+      <nb-card-header>
+        Selected class series{{selectedClassSeries ? ' : ' + selectedClassSeries.description : ''}}
+      </nb-card-header>
+      <nb-list *ngIf="classSessionsOfSelectedSeries">
+        <nb-list-item *ngFor="let classSession of classSessionsOfSelectedSeries | reverse">
+          <h6>Date : {{getDate(classSession.date)}} {{classSession.startTime}}</h6>
+          <p>{{classSession.remark}}</p>
+          <button nbButton hero class="float-right" status="warning" size="small"
+                  (click)="finishSessionRequest(classSession)">
+            Finish
+          </button>
+        </nb-list-item>
+      </nb-list>
+      <nb-card-footer>
+        <button nbButton hero class="float-right" status="success" size="small" (click)="newSessionRequest()"
+                [disabled]="!selectedClassSeries">
+          Add a new session
+        </button>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</div>
+
+<ng-template #newSessionModal let-ref="dialogRef">
+  <form class="form-horizontal" #form="ngForm" (submit)="newClassSession(ref)">
+    <nb-card id="newSessionModal">
+      <nb-card-header>New Class Session for {{selectedClassSeries?.description}}</nb-card-header>
+      <nb-card-body>
+
+        <div class="form-group row">
+          <label for="date" class="label col-sm-4 col-form-label">Date</label>
+          <div class="col-sm-8">
+            <input nbInput fullWidth id="date" placeholder="Date" name="date"
+                   #sessionDate="ngModel"
+                   [(ngModel)]="newSession.date"
+                   [nbDatepicker]="sessionDatePicker"
+                   [required]="'Name required'"
+                   [attr.aria-invalid]="sessionDate.invalid && sessionDate.touched ? true : null"
+                   [status]="!sessionDate.touched? 'primary' : sessionDate.invalid?'danger' : 'success'">
+            <nb-datepicker #sessionDatePicker></nb-datepicker>
+            <ng-container *ngIf="sessionDate.invalid && sessionDate.touched">
+              <p class="caption status-danger" *ngIf="sessionDate.errors?.required">
+                Date is required!
+              </p>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="session-time" class="label col-sm-4 col-form-label">Start time</label>
+          <div class="col-sm-8">
+            <input nbInput fullWidth id="session-time" placeholder="Time" name="session-time"
+                   [(ngModel)]="newSession.startTime">
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="remark" class="label col-sm-4 col-form-label">Remark</label>
+          <div class="col-sm-8">
+            <textarea nbInput fullWidth id="remark" placeholder="Remark" name="session-time"
+                      [(ngModel)]="newSession.remark"></textarea>
+          </div>
+        </div>
+
+      </nb-card-body>
+      <nb-card-footer>
+        <button nbButton hero class="float-right" status="success" type="submit" [disabled]="!form.valid">
+          Apply
+        </button>
+        <button nbButton hero class="float-right right-gap" status="danger" (click)="ref.close()">Cancel</button>
+      </nb-card-footer>
+    </nb-card>
+  </form>
+</ng-template>
+
+
+<ng-template #newSeriesModal let-ref="dialogRef">
+  <form class="form-horizontal" #form="ngForm" (submit)="newClassSeries(ref)">
+    <nb-card id="newSeriesModal">
+      <nb-card-header>New Class Series</nb-card-header>
+      <nb-card-body>
+
+        <div class="form-group row">
+          <label for="description" class="label col-sm-3 col-form-label">Description</label>
+          <div class="col-sm-9">
+            <input nbInput fullWidth id="description" placeholder="Description" name="description"
+                   #description="ngModel"
+                   [(ngModel)]="templateForNewClassSeries.description"
+                   [required]="'Name required'"
+                   [attr.aria-invalid]="description.invalid && description.touched ? true : null"
+                   [status]="!description.touched? 'primary' : description.invalid?'danger' : 'success'">
+            <ng-container *ngIf="description.invalid && description.touched">
+              <p class="caption status-danger" *ngIf="description.errors?.required">
+                Description is required!
+              </p>
+            </ng-container>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="type" class="label col-sm-3 col-form-label">Name</label>
+          <div class="col-sm-9">
+            <input nbInput fullWidth id="type" placeholder="Type" name="type"
+                   #type="ngModel"
+                   [(ngModel)]="templateForNewClassSeries.type"
+                   [required]="'Name required'"
+                   [attr.aria-invalid]="type.invalid && type.touched ? true : null"
+                   [status]="!type.touched? 'primary' : type.invalid?'danger' : 'success'">
+            <ng-container *ngIf="type.invalid && type.touched">
+              <p class="caption status-danger" *ngIf="type.errors?.required">
+                Type is required!
+              </p>
+            </ng-container>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="type" class="label col-sm-3 col-form-label">Location</label>
+          <div class="col-sm-9">
+            <input nbInput fullWidth id="location" placeholder="Location" name="location"
+                   [(ngModel)]="templateForNewClassSeries.location">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="time" class="label col-sm-3 col-form-label">Time</label>
+          <div class="col-sm-9">
+            <input nbInput fullWidth id="time" placeholder="Time" name="time"
+                   [(ngModel)]="templateForNewClassSeries.time">
+          </div>
+        </div>
+
+      </nb-card-body>
+      <nb-card-footer [nbSpinner]="loadingNewSeries" nbSpinnerStatus="success">
+        <button nbButton hero class="float-right" status="success" type="submit"
+                [disabled]="!form.valid">Apply
+        </button>
+        <button nbButton hero class="float-right right-gap" status="danger" (click)="ref.close()">Cancel</button>
+      </nb-card-footer>
+    </nb-card>
+  </form>
+</ng-template>
+
+<ng-template #finishSessionConfirmation let-ref="dialogRef">
+  <ngx-confirmation-box [message]="'Are you sure you want to finish this session?'"
+                        [confirmationBoxDialogRef]="ref"></ngx-confirmation-box>
+</ng-template>
+
+<ng-template #deactivateClassSeriesConfirmation let-ref="dialogRef">
+  <ngx-confirmation-box [message]="'Are you sure you want to deactivate this class series?'"
+                        [confirmationBoxDialogRef]="ref"></ngx-confirmation-box>
+</ng-template>

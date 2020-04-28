@@ -1,0 +1,12 @@
+<nb-card>
+  <nb-card-header>Attention!</nb-card-header>
+  <nb-card-body>
+    <p>{{message}}</p>
+  </nb-card-body>
+  <nb-card-footer>
+    <button nbButton class="float-right" hero status="success" size="small"
+            (click)="submit(true)">Yes</button>
+    <button nbButton class="float-right right-gap" hero status="danger" size="small"
+            (click)="submit(false)">No</button>
+  </nb-card-footer>
+</nb-card>

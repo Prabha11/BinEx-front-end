@@ -1,0 +1,141 @@
+<div class="row">
+  <div class="col-lg-6">
+    <form #attendanceForm="ngForm" (submit)="getStudentAndAddAttendanceAttempt()">
+      <nb-card size="tiny">
+        <nb-card-body>
+          <div class="form-group row">
+            <label for="studentID" class="label col-sm-12">Student ID</label>
+            <div class="col-sm-12">
+              <input nbInput fullWidth id="studentID" placeholder="studentID" name="studentID"
+                     #studentID="ngModel"
+                     [disabled]="!(selectedClassSeries && selectedClassSession)"
+                     [(ngModel)]="inputStudentId"
+                     [required]="'Student ID required'"
+                     [pattern]="'^[0-9-]{10}$'"
+                     [attr.aria-invalid]="studentID.invalid && studentID.touched ? true : null"
+                     [status]="!studentID.touched? 'primary' : studentID.invalid?'danger' : 'success'">
+              <ng-container *ngIf="studentID.invalid && studentID.touched">
+                <p class="caption status-danger" *ngIf="studentID.errors?.required">
+                  Student ID is required!
+                </p>
+                <p class="caption status-danger" *ngIf="studentID.errors?.pattern">
+                  Invalid Student ID! Should contain 10 digits
+                </p>
+              </ng-container>
+            </div>
+          </div>
+        </nb-card-body>
+        <nb-card-footer>
+          <button nbButton hero class="float-right" size="small" type="submit" status="success"
+                  [disabled]="!attendanceForm.valid">Apply</button>
+        </nb-card-footer>
+      </nb-card>
+    </form>
+  </div>
+  <div class="col-lg-3">
+    <nb-card size="tiny">
+      <nb-card-body>
+        <h6>Class series</h6>
+        <h5 class="{{selectedClassSeries ? 'success-color' : 'danger-color'}}">
+          {{selectedClassSeries ? selectedClassSeries.description : 'Select a class series'}}</h5>
+      </nb-card-body>
+      <nb-card-footer>
+        <nb-select fullWidth>
+          <nb-option *ngFor="let classSeries of allClassSeries" [value]="classSeries"
+                     (selectionChange)="selectClassSeries(classSeries)">
+            {{classSeries.description}}
+          </nb-option>
+        </nb-select>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+  <div class="col-lg-3">
+    <nb-card size="tiny">
+      <nb-card-body>
+        <h6>Class session</h6>
+        <h5 class="{{selectedClassSession ? 'success-color' : 'danger-color'}}">
+          {{selectedClassSession ? getDate(selectedClassSession.date) : 'Select a class session'}}</h5>
+      </nb-card-body>
+      <nb-card-footer>
+        <nb-select fullWidth>
+          <nb-option *ngFor="let classSession of classSessionsForSelectedClassSeries" [value]="classSession"
+                     (selectionChange)="selectClassSession(classSession)">
+            {{getDate(classSession.date)}}
+          </nb-option>
+        </nb-select>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-5">
+    <nb-card size="small">
+      <nb-card-body>
+        <nb-user size="giant" name="{{selectedStudent?.name}}" title="{{selectedStudent?.id}}"></nb-user>
+      </nb-card-body>
+      <nb-card-footer>
+        <button nbButton hero class="float-right" size="small" status="success" (click)="openAddEnrollment()"
+                [disabled]="!(selectedClassSeries && selectedStudent)">
+          Add enrollment
+        </button>
+        <button nbButton hero class="float-right right-gap" size="small" type="button" status="info">
+          Manually select
+        </button>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+  <div class="col-lg-7">
+    <nb-card size="small" (dblclick)="openAlertSettings()">
+      <nb-card-body *ngIf="notificationTypeAlertList ; else notificationMessageList">
+        <nb-alert *ngFor="let alert of alerts" [status]="alert.status">
+          {{alert.subject + ' : ' + alert.message}}
+        </nb-alert>
+      </nb-card-body>
+      <ng-template #notificationMessageList>
+        <nb-card-body>
+          <p *ngFor="let alert of alerts" class="{{alert.status}}-color">
+            {{alert.subject + ' : ' + alert.message}}
+          </p>
+        </nb-card-body>
+      </ng-template>
+    </nb-card>
+  </div>
+</div>
+
+<ng-template #enrollmentConfirmation let-ref="dialogRef">
+  <ngx-confirmation-box
+    [message]="'Are you sure you want add enrollment for ' + selectedStudent?.name + ' for '
+      + selectedClassSeries?.description"
+    [confirmationBoxDialogRef]="ref">
+  </ngx-confirmation-box>
+</ng-template>
+
+<ng-template #addEnrollment let-ref="dialogRef">
+  <ngx-add-enrolment-dialog [classSeries]="selectedClassSeries"
+                            [student]="selectedStudent"
+                            [dialogRef]="ref">
+  </ngx-add-enrolment-dialog>
+</ng-template>
+
+<ng-template #alertBoxSettings let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>Alert box settings</nb-card-header>
+    <nb-card-body>
+      <div class="row">
+        <label for="notificationQueueSize" class="label col-sm-5">Number of allowed messages</label>
+        <div class="col-sm-7">
+          <input nbInput fullWidth type="number" name="notificationQueueSize" id="notificationQueueSize"
+                 [(ngModel)]="notificationQueueSize">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 offset-sm-5">
+          <nb-checkbox [(ngModel)]="notificationTypeAlertList" name="notificationTypeAlertList">Alert list</nb-checkbox>
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton hero class="float-right" size="small" status="success" (click)="ref.close()">OK</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

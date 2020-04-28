@@ -1,0 +1,69 @@
+<div class="row">
+  <div class="col-sm-12">
+    <nb-card>
+      <nb-card-body>
+        <div class="row form-group">
+          <div class="col-sm-2">
+            <label class="col-form-label label">Select class series</label>
+          </div>
+          <div class="col-sm-3 offset-sm-1">
+            <nb-select fullWidth>
+              <nb-option *ngFor="let classSeries of allClassSeries" [value]="classSeries"
+                         (selectionChange)="selectClassSeries(classSeries)">
+                {{classSeries.description}}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-sm-2">
+            <label class="col-form-label label">Select class session 1</label>
+          </div>
+          <div class="col-sm-1">
+            <label class="col-form-label label">Date</label>
+          </div>
+          <div class="col-sm-3">
+            <input nbInput fullWidth [nbDatepicker]="sessionOneDate" [disabled]="!selectedClassSeries">
+            <nb-datepicker #sessionOneDate
+                           (dateChange)="loadClassSessionsForClassSessionOneByDate($event)"></nb-datepicker>
+          </div>
+          <div class="col-sm-1 offset-sm-1">
+            <label class="col-form-label label">Session</label>
+          </div>
+          <div class="col-sm-3">
+            <nb-select fullWidth [disabled]="!selectedClassSeries">
+              <nb-option *ngFor="let classSession of classSessionsForSessionOne" [value]="classSession"
+                         (selectionChange)="selectClassSessionOne(classSession)">
+                {{getSessionIdentifier(classSession)}}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-sm-2">
+            <label class="col-form-label label">Select class session 2</label>
+          </div>
+          <div class="col-sm-1">
+            <label class="col-form-label label">Date</label>
+          </div>
+          <div class="col-sm-3">
+            <input nbInput fullWidth [nbDatepicker]="sessionTwoDate" [disabled]="!selectedClassSeries">
+            <nb-datepicker #sessionTwoDate
+                           (dateChange)="loadClassSessionsForClassSessionTwoByDate($event)"></nb-datepicker>
+          </div>
+          <div class="col-sm-1 offset-sm-1">
+            <label class="col-form-label label">Session</label>
+          </div>
+          <div class="col-sm-3">
+            <nb-select fullWidth [disabled]="!selectedClassSeries">
+              <nb-option *ngFor="let classSession of classSessionsForSessionTwo" [value]="classSession"
+                         (selectionChange)="selectClassSessionTwo(classSession)">
+                {{getSessionIdentifier(classSession)}}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
