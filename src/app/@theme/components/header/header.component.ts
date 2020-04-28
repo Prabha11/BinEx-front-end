@@ -128,9 +128,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userApiService.getLoggedInUser().subscribe(
       res => {
         this.user = res;
+        this.toggleSidebar();
       },
       err => {
         this.authService.login();
+        this.toggleSidebar();
       },
     );
   }

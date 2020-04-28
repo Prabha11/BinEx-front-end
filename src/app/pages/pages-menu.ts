@@ -71,44 +71,44 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/dashboard',
     home: true,
   },
-  {
-    title: 'Students',
-    icon: 'people-outline',
-    children: [
-      {
-        title: 'All students',
-        link: '/pages/students/view-all',
-      },
-      {
-        title: 'New student',
-        link: '/pages/students/add-new',
-      },
-    ],
-  },
-  {
-    title: 'Class Series',
-    icon: 'calendar-outline',
-    children: [
-      {
-        title: 'All class series',
-        link: '/pages/class-series/view-all',
-      },
-    ],
-  },
-  {
-    title: 'Attendance',
-    icon: 'upload-outline',
-    children: [
-      {
-        title: 'Check in terminal',
-        link: '/pages/attendance/check-in',
-      },
-      {
-        title: 'Attendance report',
-        link: '/pages/attendance/attendance-report',
-      },
-    ],
-  },
+  // {
+  //   title: 'Students',
+  //   icon: 'people-outline',
+  //   children: [
+  //     {
+  //       title: 'All students',
+  //       link: '/pages/students/view-all',
+  //     },
+  //     {
+  //       title: 'New student',
+  //       link: '/pages/students/add-new',
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: 'Class Series',
+  //   icon: 'calendar-outline',
+  //   children: [
+  //     {
+  //       title: 'All class series',
+  //       link: '/pages/class-series/view-all',
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: 'Attendance',
+  //   icon: 'upload-outline',
+  //   children: [
+  //     {
+  //       title: 'Check in terminal',
+  //       link: '/pages/attendance/check-in',
+  //     },
+  //     {
+  //       title: 'Attendance report',
+  //       link: '/pages/attendance/attendance-report',
+  //     },
+  //   ],
+  // },
   // {
   //   title: 'UI Features',
   //   icon: 'keypad-outline',
