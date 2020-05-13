@@ -1,0 +1,45 @@
+<nb-card size="medium" style="width: 500px;max-width: 100%">
+  <nb-card-header>
+    File viewer
+  </nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <nb-actions size="small">
+        <nb-action class="control-item" size="small" icon="arrow-ios-back-outline" (click)="goBack()"></nb-action>
+        <nb-action class="control-item" size="small" icon="home-outline" (click)="goHome()"></nb-action>
+        <nb-action class="user-action">
+          {{currentFolder.name}}
+        </nb-action>
+      </nb-actions>
+    </div>
+    <div class="row" style="margin-top: 10px!important;">
+      <div class="col-sm-12" *ngFor="let file of currentFolder.childFileStructures">
+        <div *ngIf="file.folder; else notFolder">
+          <button nbButton size="small" status="warning" ghost (click)="openFolder(file)">
+            <nb-icon icon="folder-outline"></nb-icon>
+            {{file.name}}
+          </button>
+        </div>
+        <ng-template #notFolder>
+          <div>
+            <button nbButton size="small" status="success" ghost (click)="selectFile(file)">
+              <nb-icon icon="file-outline"></nb-icon>
+              {{file.name}}
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <label class="label col-form-label">{{selectedFile?.name}}</label>
+    <button nbButton hero size="small" class="float-right"
+            [disabled]="!selectedFile"
+            (click)="submit(selectedFile)" status="success">
+      Select
+    </button>
+    <button nbButton hero size="small" class="float-right right-gap" (click)="cancel()" status="danger">
+      Close
+    </button>
+  </nb-card-footer>
+</nb-card>
