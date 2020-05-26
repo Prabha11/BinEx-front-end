@@ -7,7 +7,7 @@ import {
   NbUserModule,
   NbIconModule,
   NbSelectModule,
-  NbListModule, NbInputModule, NbCheckboxModule, NbActionsModule, NbDialogModule,
+  NbListModule, NbInputModule, NbCheckboxModule, NbActionsModule, NbDialogModule, NbSpinnerModule,
 } from '@nebular/theme';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
@@ -42,6 +42,7 @@ import { FileStructureViewerComponent } from './file-structure-viewer/file-struc
     NbCheckboxModule,
     NbActionsModule,
     NbDialogModule.forChild(),
+    NbSpinnerModule,
   ],
   declarations: [
     DashboardComponent,

@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit {
       user: null,
     },
   };
+  processLoading: boolean = false;
 
   constructor(private dialogService: NbDialogService,
               private toastrService: NbToastrService,
@@ -82,13 +83,15 @@ export class DashboardComponent implements OnInit {
   }
 
   runExecution() {
+    this.processLoading = true;
     this.executionApiService.executeProcess(this.executionRequest).subscribe(
       res => {
         this.executionResult = res.toString();
-
+        this.processLoading = false;
       },
       err => {
         this.executionResult = err.toString();
+        this.processLoading = false;
       },
     );
   }

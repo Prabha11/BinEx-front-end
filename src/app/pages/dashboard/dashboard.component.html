@@ -32,7 +32,7 @@
             <label class="label">Manage features and other parameters</label>
             <p>{{executionResult}}</p>
           </nb-card-body>
-          <nb-card-footer>
+          <nb-card-footer [nbSpinner]="processLoading">
             <button nbButton ghost status="info" size="tiny" (click)="openProcessStarter()">
               <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
               Start a binning process
@@ -49,7 +49,7 @@
 
     <div class="row">
       <div class="col-sm-12">
-        <nb-card size="small">
+        <nb-card size="small" [nbSpinner]="processLoading">
           <nb-card-body>
             <h5>Binned percentages</h5>
             <ngx-binned-percentage-chart></ngx-binned-percentage-chart>
@@ -60,7 +60,7 @@
 
   </div>
   <div class="col-md-6">
-    <nb-card size="large">
+    <nb-card size="large" [nbSpinner]="processLoading">
       <nb-card-body>
         <h5>Number of binned contigs</h5>
         <ngx-no-of-binned-contigs-cart></ngx-no-of-binned-contigs-cart>
