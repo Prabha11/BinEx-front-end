@@ -5,7 +5,7 @@ import {ErrorHandlingService} from '../../@core/service/error-handling.service';
 import {FileStructure} from '../../@core/model/file-structure';
 import {ExecutionApiService} from '../../@core/service/api-service/execution-api.service';
 import {ExecutionRequest} from '../../@core/model/execution-request';
-import {JobCard} from "../../@core/model/job-card";
+import {JobCard} from '../../@core/model/job-card';
 
 @Component({
   selector: 'ngx-ecommerce',
@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit {
   jobCards: JobCard[] = [];
   executionRequest: ExecutionRequest = {
     dataset: '',
+    emailAddress: '',
     id: null,
     inputFile1: null,
     inputFile2: null,
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit {
     inputFile4: null,
     inputFile5: null,
     inputFile6: null,
+    inputFile7: null,
     outputFile: {
       id: null,
       folder: null,
@@ -83,6 +85,7 @@ export class DashboardComponent implements OnInit {
     this.executionApiService.executeProcess(this.executionRequest).subscribe(
       res => {
         this.executionResult = res.toString();
+
       },
       err => {
         this.executionResult = err.toString();
@@ -138,6 +141,14 @@ export class DashboardComponent implements OnInit {
     this.dialogService.open(this.fileViewer).onClose.subscribe(
       res => {
         this.executionRequest.inputFile6 = res;
+      },
+    );
+  }
+
+  selectFile7(inputFile: FileStructure) {
+    this.dialogService.open(this.fileViewer).onClose.subscribe(
+      res => {
+        this.executionRequest.inputFile7 = res;
       },
     );
   }
