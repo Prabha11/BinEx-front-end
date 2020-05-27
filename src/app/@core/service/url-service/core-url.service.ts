@@ -5,8 +5,8 @@ import {Injectable} from '@angular/core';
 })
 export class CoreUrlService {
   private _BASE_URL_LOCAL = 'http://localhost:8085/api/v1';
-  private _BASE_URL = 'https://stacks-sms-uh-api.herokuapp.com/api/v1';
-  private static _BASE_URL: 'https://stacks-sms-uh-api.herokuapp.com/api/v1';
+  private _BASE_URL = 'http://167.172.132.202:8085/api/v1';
+  private static _BASE_URL: 'http://167.172.132.202:8085/api/v1';
 
   constructor() {
   }
