@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
 @Component({
@@ -10,6 +10,7 @@ import { NbThemeService } from '@nebular/theme';
 export class BinnedPercentageChartComponent implements AfterViewInit, OnDestroy {
   options: any = {};
   themeSubscription: any;
+  @Input() data: {value: number, name: string}[];
 
   constructor(private theme: NbThemeService) {
   }
@@ -41,11 +42,7 @@ export class BinnedPercentageChartComponent implements AfterViewInit, OnDestroy 
             type: 'pie',
             radius: ['30%', '50%'],
             center: ['60%', '30%'],
-            data: [
-              { value: 335, name: 'Previous Method' },
-              { value: 310, name: 'Outlier Handler' },
-              { value: 234, name: 'Unbinned' },
-            ],
+            data: this.data,
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,

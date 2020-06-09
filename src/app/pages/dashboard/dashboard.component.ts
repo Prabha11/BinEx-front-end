@@ -6,6 +6,7 @@ import {FileStructure} from '../../@core/model/file-structure';
 import {ExecutionApiService} from '../../@core/service/api-service/execution-api.service';
 import {ExecutionRequest} from '../../@core/model/execution-request';
 import {JobCard} from '../../@core/model/job-card';
+import * as fileSaver from 'file-saver';
 
 @Component({
   selector: 'ngx-ecommerce',
@@ -15,7 +16,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild('uploadBox', {static: false}) uploadBox: TemplateRef<any>;
   @ViewChild('fileViewer', {static: false}) fileViewer: TemplateRef<any>;
   @ViewChild('processStarter', {static: false}) processStarter: TemplateRef<any>;
-  fileToUpload: any;
+  fileToUpload: File = null;
   filesList: FileStructure[] = [];
   fileStructure: FileStructure;
   executionResult: String = '';
@@ -27,10 +28,6 @@ export class DashboardComponent implements OnInit {
     inputFile1: null,
     inputFile2: null,
     inputFile3: null,
-    inputFile4: null,
-    inputFile5: null,
-    inputFile6: null,
-    inputFile7: null,
     outputFile: {
       id: null,
       folder: null,
@@ -40,6 +37,15 @@ export class DashboardComponent implements OnInit {
     },
   };
   processLoading: boolean = false;
+  percentages: { value: number, name: string }[] = [];
+  fetched: boolean = false;
+  methodName: string = 'Previous method';
+  binNames: string[] = [];
+  binValuesOld: number[] = [];
+  binValuesNew: number[] = [];
+
+  resultFileId: number = null;
+  allJobs: JobCard[] = [];
 
   constructor(private dialogService: NbDialogService,
               private toastrService: NbToastrService,
@@ -49,6 +55,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.getFilesList();
+    this.loadJobCards();
   }
 
   openFileUploadBox() {
@@ -61,7 +68,7 @@ export class DashboardComponent implements OnInit {
   }
 
   uploadFile() {
-    this.fileApiService.postNewFile(this.fileToUpload).subscribe(
+    this.fileApiService.postNewFile(this.fileToUpload, 1).subscribe(
       res => {
       },
       err => {
@@ -82,11 +89,49 @@ export class DashboardComponent implements OnInit {
     );
   }
 
+  fetchResult(orderId: number) {
+    this.fetched = false;
+    this.executionApiService.getResult(orderId).subscribe(
+      res => {
+        const binExPercentage = res.executionResponseData.newPercentage - res.executionResponseData.oldPercentage;
+        const unbinnedPercentage = 100 - res.executionResponseData.newPercentage;
+        this.percentages = [
+          {value: res.executionResponseData.oldPercentage, name: 'Previous method'},
+          {value: binExPercentage, name: 'With BinEx'},
+          {value: unbinnedPercentage, name: 'Unbinned'},
+        ];
+
+        const binNames: string[] = [];
+        const binValuesOld: number[] = [];
+        const binValuesNew: number[] = [];
+
+        for (const bin of res.executionResponseData.bins) {
+          binNames.push(bin.binName);
+          binValuesOld.push(bin.numberOfContigsInOldBin);
+          binValuesNew.push(bin.numberOfContigsInNewBin);
+        }
+
+        this.binNames = binNames;
+        this.binValuesOld = binValuesOld;
+        this.binValuesNew = binValuesNew;
+
+        this.resultFileId = res.outputFile.id;
+
+        this.fetched = true;
+      },
+      err => {
+        ErrorHandlingService.handle(err, this.toastrService);
+        this.fetched = false;
+      },
+    );
+  }
+
   runExecution() {
     this.processLoading = true;
     this.executionApiService.executeProcess(this.executionRequest).subscribe(
       res => {
         this.executionResult = res.toString();
+        this.fetchResult(res.executionOrderID);
         this.processLoading = false;
       },
       err => {
@@ -124,34 +169,21 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  selectFile4(inputFile: FileStructure) {
-    this.dialogService.open(this.fileViewer).onClose.subscribe(
-      res => {
-        this.executionRequest.inputFile4 = res;
-      },
-    );
+  downloadResult(fileId: number) {
+    this.fileApiService.downloadFile(fileId);
   }
 
-  selectFile5(inputFile: FileStructure) {
-    this.dialogService.open(this.fileViewer).onClose.subscribe(
-      res => {
-        this.executionRequest.inputFile5 = res;
-      },
-    );
+  handleFileInput(files: FileList) {
+    this.fileToUpload = files.item(0);
   }
 
-  selectFile6(inputFile: FileStructure) {
-    this.dialogService.open(this.fileViewer).onClose.subscribe(
+  private loadJobCards() {
+    this.executionApiService.getJobCards().subscribe(
       res => {
-        this.executionRequest.inputFile6 = res;
+        this.allJobs = res;
       },
-    );
-  }
-
-  selectFile7(inputFile: FileStructure) {
-    this.dialogService.open(this.fileViewer).onClose.subscribe(
-      res => {
-        this.executionRequest.inputFile7 = res;
+      err => {
+        ErrorHandlingService.handle(err, this.toastrService);
       },
     );
   }

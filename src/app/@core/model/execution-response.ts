@@ -1,11 +1,11 @@
 import {FileStructure} from './file-structure';
+import {ExecutionResponseData} from './execution-response-data';
 
-export interface ExecutionRequest {
-  id: number;
+export interface ExecutionResponse {
   dataset: string;
-  emailAddress: string;
   inputFile1: FileStructure;
   inputFile2: FileStructure;
   inputFile3: FileStructure;
   outputFile: FileStructure;
+  executionResponseData: ExecutionResponseData;
 }

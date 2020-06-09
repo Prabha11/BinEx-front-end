@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FileStructure} from '../../../@core/model/file-structure';
-import {NbDialogRef} from '@nebular/theme';
+import {NbDialogRef, NbDialogService} from '@nebular/theme';
+import {FileApiService} from '../../../@core/service/api-service/file-api.service';
 
 @Component({
   selector: 'ngx-file-structure-viewer',
@@ -8,13 +9,16 @@ import {NbDialogRef} from '@nebular/theme';
   styleUrls: ['./file-structure-viewer.component.scss'],
 })
 export class FileStructureViewerComponent implements OnInit {
+  @ViewChild('uploadBox', {static: false}) uploadBox: TemplateRef<any>;
   @Input() fileStructure: FileStructure;
   @Input() fileSelectorDialog: NbDialogRef<any>;
   currentFolder: FileStructure = null;
   parentFolder: FileStructure = null;
   selectedFile: FileStructure = null;
+  private fileToUpload: File = null;
 
-  constructor() {
+  constructor(private dialogService: NbDialogService,
+              private fileApiService: FileApiService) {
   }
 
   ngOnInit() {
@@ -36,6 +40,23 @@ export class FileStructureViewerComponent implements OnInit {
 
   goHome() {
     this.openFolder(this.fileStructure);
+  }
+
+  openFileUploadBox() {
+    this.dialogService.open(this.uploadBox);
+  }
+
+  uploadFile() {
+    this.fileApiService.postNewFile(this.fileToUpload, this.currentFolder.id).subscribe(
+      res => {
+      },
+      err => {
+      },
+    );
+  }
+
+  handleFileInput(files: FileList) {
+    this.fileToUpload = files.item(0);
   }
 
   cancel() {

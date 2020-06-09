@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams, HttpRequest} from '@angular/common/http';
+import {HttpClient, HttpParams, HttpRequest, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {CoreUrlService} from '../url-service/core-url.service';
 import {FileStructure} from '../../model/file-structure';
@@ -22,11 +22,11 @@ export class FileApiService {
     return this.http.get<File>(this.FILES_URL + '/' + id);
   }
 
-  postNewFile(file: File): Observable<any> {
+  postNewFile(file: File, parentFolderId: number): Observable<any> {
     const formData: FormData = new FormData();
 
     formData.append('file', file);
-    formData.append('one', 'file');
+    formData.append('parentFolderId', parentFolderId.toString());
 
     const req = new HttpRequest('POST', `${this.FILE_URL}/upload`, formData, {
       reportProgress: true,
@@ -42,4 +42,7 @@ export class FileApiService {
     return this.http.delete(this.FILE_URL + '/' + id);
   }
 
+  downloadFile(fileId: number) {
+    window.open(`${this.FILE_URL}/download/${fileId}`);
+  }
 }

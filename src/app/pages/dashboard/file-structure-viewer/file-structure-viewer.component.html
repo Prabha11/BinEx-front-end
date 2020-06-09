@@ -7,6 +7,7 @@
       <nb-actions size="small">
         <nb-action class="control-item" size="small" icon="arrow-ios-back-outline" (click)="goBack()"></nb-action>
         <nb-action class="control-item" size="small" icon="home-outline" (click)="goHome()"></nb-action>
+        <nb-action class="control-item" size="small" icon="upload-outline" (click)="openFileUploadBox()"></nb-action>
         <nb-action class="user-action">
           {{currentFolder.name}}
         </nb-action>
@@ -43,3 +44,24 @@
     </button>
   </nb-card-footer>
 </nb-card>
+
+<ng-template #uploadBox let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>
+      Upload Files
+    </nb-card-header>
+    <nb-card-body>
+      <div class="form-group row">
+        <div class="col-sm-3">
+          <label class="col-form-label label">Select File</label>
+        </div>
+        <div class="col-sm-9">
+          <input fullWidth nbInput type="file" (change)="handleFileInput($event.target.files)">
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton hero class="float-right" status="success" size="small" (click)="uploadFile()">Upload</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

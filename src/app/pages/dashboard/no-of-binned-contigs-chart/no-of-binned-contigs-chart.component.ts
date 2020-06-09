@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
 @Component({
@@ -10,6 +10,10 @@ import { NbThemeService } from '@nebular/theme';
 export class NoOfBinnedContigsChartComponent implements AfterViewInit, OnDestroy {
   options: any = {};
   themeSubscription: any;
+  @Input() methodName: string;
+  @Input() binNames: string[];
+  @Input() binValuesOld: number[];
+  @Input() binValuesNew: number[];
 
   constructor(private theme: NbThemeService) {
   }
@@ -47,7 +51,7 @@ export class NoOfBinnedContigsChartComponent implements AfterViewInit, OnDestroy
         xAxis: [
           {
             type: 'category',
-            data: ['BIN1', 'BIN2', 'BIN3', 'BIN4', 'BIN5', 'BIN6', 'BIN7'],
+            data: this.binNames,
             axisTick: {
               alignWithLabel: true,
             },
@@ -85,16 +89,16 @@ export class NoOfBinnedContigsChartComponent implements AfterViewInit, OnDestroy
         ],
         series: [
           {
-            name: 'Before',
+            name: this.methodName,
             type: 'bar',
             barWidth: '37%',
-            data: [10, 52, 200, 334, 390, 330, 220],
+            data: this.binValuesOld,
           },
           {
-            name: 'After',
+            name: 'With BinEx',
             type: 'bar',
             barWidth: '37%',
-            data: [30, 80, 300, 420, 432, 469, 248],
+            data: this.binValuesNew,
           },
         ],
       };

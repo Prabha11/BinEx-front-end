@@ -10,16 +10,38 @@
             <label class="label">You can connect data files from here</label>
           </nb-card-body>
           <nb-card-footer>
+            <div class="row">
+              <label class="label col-form-label col-sm-4">Previous results</label>
+              <div class="col-sm-4">
+                <nb-select fullWidth>
+                  <nb-option *ngFor="let result of allJobs" [value]="result.executionOrderID"
+                             (click)="fetchResult(result.executionOrderID)">
+                    {{result.cardName}}</nb-option>
+                </nb-select>
+              </div>
+              <div class="col-sm-4">
+                <button nbButton ghost status="info" size="tiny" (click)="openFileViewer()">
+                  <nb-icon icon="file-outline"></nb-icon>
+                  Files
+                </button>
+              </div>
+            </div>
             <button hidden nbButton ghost size="tiny">
-              <img height="25" src="https://firebasestorage.googleapis.com/v0/b/drive-assets.google.com.a.appspot.com/o/Asset%20-%20Drive%20Lockup%20-%20with%20gray%20Google.svg?alt=media" alt="Google drive">
+              <img height="25"
+                   src="https://firebasestorage.googleapis.com/v0/b/drive-assets.google.com.a.appspot.com/o/Asset%20-%20Drive%20Lockup%20-%20with%20gray%20Google.svg?alt=media"
+                   alt="Google drive">
             </button>
             <button hidden nbButton ghost status="info" size="tiny" (click)="openFileUploadBox()">
               <nb-icon icon="upload-outline"></nb-icon>
               Upload
             </button>
-            <button nbButton ghost status="info" size="tiny" (click)="openFileViewer()">
+            <button hidden nbButton ghost status="info" size="tiny" (click)="openFileViewer()">
               <nb-icon icon="file-outline"></nb-icon>
               Files
+            </button>
+            <button hidden nbButton ghost status="info" size="tiny">
+              <nb-icon icon="download-outline"></nb-icon>
+              download result
             </button>
           </nb-card-footer>
         </nb-card>
@@ -30,7 +52,6 @@
           <nb-card-body>
             <h5>Parameters</h5>
             <label class="label">Manage features and other parameters</label>
-            <p>{{executionResult}}</p>
           </nb-card-body>
           <nb-card-footer [nbSpinner]="processLoading">
             <button nbButton ghost status="info" size="tiny" (click)="openProcessStarter()">
@@ -52,7 +73,7 @@
         <nb-card size="small" [nbSpinner]="processLoading">
           <nb-card-body>
             <h5>Binned percentages</h5>
-            <ngx-binned-percentage-chart></ngx-binned-percentage-chart>
+            <ngx-binned-percentage-chart *ngIf="fetched" [data]="percentages"></ngx-binned-percentage-chart>
           </nb-card-body>
         </nb-card>
       </div>
@@ -63,8 +84,18 @@
     <nb-card size="large" [nbSpinner]="processLoading">
       <nb-card-body>
         <h5>Number of binned contigs</h5>
-        <ngx-no-of-binned-contigs-cart></ngx-no-of-binned-contigs-cart>
+        <ngx-no-of-binned-contigs-cart *ngIf="fetched"
+                                       [methodName]="methodName"
+                                       [binNames]="binNames"
+                                       [binValuesOld]="binValuesOld"
+                                       [binValuesNew]="binValuesNew"></ngx-no-of-binned-contigs-cart>
       </nb-card-body>
+      <nb-card-footer>
+        <button nbButton ghost size="small" class="float-right"
+                [disabled]="!resultFileId" (click)="downloadResult(resultFileId)">
+          <nb-icon icon="download-outline"></nb-icon>Download result file
+        </button>
+      </nb-card-footer>
     </nb-card>
   </div>
 </div>
@@ -80,7 +111,7 @@
           <label class="col-form-label label">Select File</label>
         </div>
         <div class="col-sm-9">
-          <input fullWidth nbInput type="file" [(ngModel)]="fileToUpload">
+          <input fullWidth nbInput type="file" (change)="handleFileInput($event.target.files)">
         </div>
       </div>
     </nb-card-body>
@@ -134,7 +165,7 @@
         </div>
         <div class="col-sm-9">
           <button nbButton ghost status="success" (click)="selectFile1(executionRequest.inputFile1)">
-            {{executionRequest.inputFile1? executionRequest.inputFile1.name :
+            {{executionRequest.inputFile1 ? executionRequest.inputFile1.name :
               'Select Input File 1'}}</button>
         </div>
       </div>
@@ -145,7 +176,7 @@
         </div>
         <div class="col-sm-9">
           <button nbButton ghost status="success" (click)="selectFile2(executionRequest.inputFile2)">
-            {{executionRequest.inputFile2? executionRequest.inputFile2.name :
+            {{executionRequest.inputFile2 ? executionRequest.inputFile2.name :
               'Select Input File 2'}}</button>
         </div>
       </div>
@@ -156,52 +187,8 @@
         </div>
         <div class="col-sm-9">
           <button nbButton ghost status="success" (click)="selectFile3(executionRequest.inputFile3)">
-            {{executionRequest.inputFile3? executionRequest.inputFile3.name :
+            {{executionRequest.inputFile3 ? executionRequest.inputFile3.name :
               'Select Input File 3'}}</button>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-sm-3">
-          <label class="col-form-label label">Input File 4</label>
-        </div>
-        <div class="col-sm-9">
-          <button nbButton ghost status="success" (click)="selectFile4(executionRequest.inputFile4)">
-            {{executionRequest.inputFile4? executionRequest.inputFile4.name :
-              'Select Input File 4'}}</button>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-sm-3">
-          <label class="col-form-label label">Input File 5</label>
-        </div>
-        <div class="col-sm-9">
-          <button nbButton ghost status="success" (click)="selectFile5(executionRequest.inputFile5)">
-            {{executionRequest.inputFile5? executionRequest.inputFile5.name :
-              'Select Input File 5'}}</button>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-sm-3">
-          <label class="col-form-label label">Input File 6</label>
-        </div>
-        <div class="col-sm-9">
-          <button nbButton ghost status="success" (click)="selectFile6(executionRequest.inputFile6)">
-            {{executionRequest.inputFile6? executionRequest.inputFile6.name :
-              'Select Input File 6'}}</button>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-sm-3">
-          <label class="col-form-label label">Input File 7</label>
-        </div>
-        <div class="col-sm-9">
-          <button nbButton ghost status="success" (click)="selectFile7(executionRequest.inputFile7)">
-            {{executionRequest.inputFile7? executionRequest.inputFile7.name :
-              'Select Input File 6'}}</button>
         </div>
       </div>
 
