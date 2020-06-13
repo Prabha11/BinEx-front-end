@@ -106,7 +106,7 @@ export class DashboardComponent implements OnInit {
         const binValuesNew: number[] = [];
 
         for (const bin of res.executionResponseData.bins) {
-          binNames.push(bin.binName);
+          binNames.push('BIN' + bin.binName);
           binValuesOld.push(bin.numberOfContigsInOldBin);
           binValuesNew.push(bin.numberOfContigsInNewBin);
         }
